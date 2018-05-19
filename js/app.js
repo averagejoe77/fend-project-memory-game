@@ -26,7 +26,7 @@ function createList(top, bottom) {
     let topList = mapItems(top);
     let bottomList = mapItems(bottom);
 
-    return topList.concat(bottomList);
+    return shuffle(topList.concat(bottomList));
 }
 
 function mapItems(list) {
@@ -42,11 +42,12 @@ function mapItems(list) {
 }
 
 function rebuildDeck() {
+    openCards = [];
     let oldCards = Array.prototype.slice.call(document.querySelectorAll('.card'));
     let newCards = buildList(cards);
 
     oldCards.forEach(card => {
-        card.classList.remove('show', 'match', 'open');
+        card.classList.remove('rotate', 'match', 'open', 'show');
         card.classList.add('hide');
     });
     setTimeout(function() {
@@ -71,6 +72,19 @@ function rebuildDeck() {
 
 }
 
+function checkMatch() {
+    let classSelector = openCards[1].children[0].classList.value;
+    let matches = openCards[0].children[0].classList.value === classSelector ? true : false;
+    if (!matches) {
+        openCards[0].classList.remove('open', 'show', 'rotate', 'shake');
+        openCards[1].classList.remove('open', 'show', 'rotate', 'shake');
+
+    } else {
+        openCards[0].classList.replace('show', 'match');
+        openCards[1].classList.replace('show', 'match');
+    }
+    openCards = [];
+}
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
     var currentIndex = array.length,
@@ -105,8 +119,26 @@ refreshBtn.addEventListener('click', function(e) {
 });
 
 deck.addEventListener('click', function(e) {
-    if (e.target.nodeName === 'LI') {
-        e.target.classList.add('open', 'show');
-        openCards.push(e.target);
+    e.target.classList.remove('shake');
+    if (e.target.nodeName === 'LI' && !e.target.classList.contains('open')) {
+        if (openCards.length < 2) {
+            e.target.classList.add('rotate');
+            setTimeout(function() {
+                e.target.classList.add('open', 'show');
+            }, 200);
+            openCards.push(e.target);
+        } else {
+            e.target.classList.add('shake');
+        }
+        if (openCards.length === 2) {
+            setTimeout(function() {
+                checkMatch();
+            }, 650);
+        }
+    } else {
+        e.target.classList.add('shake');
+        setTimeout(function() {
+            e.target.classList.remove('shake');
+        }, 500);
     }
 });
