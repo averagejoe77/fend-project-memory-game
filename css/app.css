@@ -36,19 +36,20 @@ h1 {
 
 
 /*
- * Styles for the deck of cards
- */
+* Styles for the deck of cards
+*/
 
 .deck {
-    width: 660px;
+    max-width: 660px;
     min-height: 680px;
     background: linear-gradient(160deg, #02ccba 0%, #aa7ecd 100%);
     padding: 32px;
     border-radius: 10px;
     box-shadow: 12px 15px 20px 0 rgba(46, 61, 73, 0.5);
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+    grid-gap: 20px;
     align-items: center;
     margin: 0 0 3em;
 }
@@ -73,6 +74,11 @@ h1 {
 .deck .card.open {
     background: #02b3e4;
     cursor: default;
+}
+
+.deck .card.error {
+    cursor: default;
+    background: #cc0202;
 }
 
 .deck .card.show {
@@ -102,6 +108,11 @@ h1 {
     transition: transform 0.4s linear;
 }
 
+.deck .card.success {
+    transform: rotate(360deg);
+    transition: transform 0.2s linear;
+}
+
 @keyframes shake {
     10%,
     90% {
@@ -124,13 +135,15 @@ h1 {
 
 
 /*
- * Styles for the Score Panel
- */
+* Styles for the Score Panel
+*/
 
 .score-panel {
-    text-align: left;
-    width: 345px;
+    display: flex;
+    justify-content: center;
     margin-bottom: 10px;
+    max-width: 345px;
+    text-align: left;
 }
 
 .score-panel .stars {
@@ -154,13 +167,15 @@ h1 {
 /* spinner */
 
 .spinner {
-    position: absolute;
+    display: flex;
+    justify-content: center;
     left: 50%;
+    opacity: 0;
+    position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
-    display: flex;
-    opacity: 0;
     transition: opacity 0.25s linear;
+    width: 100%;
 }
 
 .spinner.show {
@@ -176,7 +191,7 @@ h1 {
 .spinner div.text {
     text-align: center;
     color: #fff;
-    font-size: 2vw;
+    font-size: 5vw;
     position: absolute;
     top: -70px;
     left: 50%;
@@ -255,5 +270,22 @@ h1 {
     }
     100% {
         background-color: transparent
+    }
+}
+
+@media screen and (min-width: 530px) {
+    .deck {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media screen and (min-width: 720px) {
+    .deck {
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        width: 660px;
+    }
+    .spinner div.text {
+        font-size: 30px;
     }
 }

@@ -41,47 +41,110 @@ function mapItems(list) {
     });
 }
 
-function rebuildDeck() {
-    openCards = [];
-    let oldCards = Array.prototype.slice.call(document.querySelectorAll('.card'));
-    let newCards = buildList(cards);
+function showSpinner() {
+    let cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
 
-    oldCards.forEach(card => {
-        card.classList.remove('rotate', 'match', 'open', 'show');
+    cards.forEach(card => {
+        card.classList.remove('rotate', 'match', 'open', 'show', 'success');
         card.classList.add('hide');
     });
     setTimeout(function() {
         deck.innerHTML = '';
         spinner.children[0].textContent = 'Shuffeling...';
         spinner.classList.add('show');
-    }, 1000);
+    }, 800);
+}
+
+function hideSpinner() {
+    spinner.children[0].textContent = 'Done!!!';
+    setTimeout(function() {
+        spinner.classList.remove('show');
+    }, 200);
+}
+
+function displayMessage(time) {
+    let messages = ['Oh! I dropped them...', 'Really Mixin\' em up...', 'Almost there...', 'Hope you\'re ready.'];
+    if (time === 10000) {
+        setTimeout(function() {
+            let i = 0,
+                l = messages.length;
+            (function iterator() {
+                spinner.children[0].textContent = messages[i];
+                if (++i < l) {
+                    setTimeout(iterator, 2000);
+                }
+            })();
+        }, (time / 5));
+    } else {
+        let randomMsg = Math.floor(Math.random() * messages.length);
+        setTimeout(function() {
+            spinner.children[0].textContent = messages[randomMsg];
+        }, (time / 2));
+    }
+}
+
+function dealCards(time) {
+    let newCards = buildList(cards);
+
+    displayMessage(time);
 
     setTimeout(function() {
-        newCards.forEach(card => {
-            deck.appendChild(card);
-            setTimeout(function() {
-                spinner.children[0].textContent = 'Done!!!';
-            }, 500);
-            setTimeout(function() {
-                spinner.classList.remove('show');
-                card.classList.remove('hide');
-            }, 1000);
-        });
-    }, 6000);
+        hideSpinner();
+        let i = 0,
+            l = newCards.length;
+        (function iterator() {
+            deck.appendChild(newCards[i]);
+            newCards[i].classList.remove('hide');
 
+            if (++i < l) {
+                setTimeout(iterator, 200);
+            }
+        })();
+    }, time);
+}
 
+function rebuildDeck() {
+    openCards = [];
+
+    showSpinner();
+
+    let time = Math.floor(Math.random() * 10000);
+    if (time < 2200) {
+        time += (10000 - time);
+    }
+
+    dealCards(time);
 }
 
 function checkMatch() {
-    let classSelector = openCards[1].children[0].classList.value;
-    let matches = openCards[0].children[0].classList.value === classSelector ? true : false;
+    let firstCard = openCards[0];
+    let lastCard = openCards[1];
+    let firstClass = firstCard.classList;
+    let lastClass = lastCard.classList;
+    let classSelector = lastCard.children[0].classList.value;
+    let matches = firstCard.children[0].classList.value === classSelector ? true : false;
     if (!matches) {
-        openCards[0].classList.remove('open', 'show', 'rotate', 'shake');
-        openCards[1].classList.remove('open', 'show', 'rotate', 'shake');
+        firstClass.add('error', 'shake');
+        lastClass.add('error', 'shake');
+        setTimeout(function() {
+            firstClass.remove('shake');
+            lastClass.remove('shake');
+        }, 400);
+        setTimeout(function() {
+            firstClass.remove('rotate');
+            lastClass.remove('rotate');
+        }, 500);
+        setTimeout(function() {
+            firstClass.remove('open', 'show', 'error');
+            lastClass.remove('open', 'show', 'error');
+        }, 600);
 
     } else {
-        openCards[0].classList.replace('show', 'match');
-        openCards[1].classList.replace('show', 'match');
+        firstClass.replace('show', 'match');
+        lastClass.replace('show', 'match');
+
+        firstClass.add('success');
+        lastClass.add('success');
     }
     openCards = [];
 }
@@ -121,14 +184,17 @@ refreshBtn.addEventListener('click', function(e) {
 deck.addEventListener('click', function(e) {
     e.target.classList.remove('shake');
     if (e.target.nodeName === 'LI' && !e.target.classList.contains('open')) {
-        if (openCards.length < 2) {
+        openCards.push(e.target);
+        if (openCards.length <= 2) {
             e.target.classList.add('rotate');
             setTimeout(function() {
                 e.target.classList.add('open', 'show');
             }, 200);
-            openCards.push(e.target);
         } else {
             e.target.classList.add('shake');
+            setTimeout(function() {
+                e.target.classList.remove('shake');
+            }, 500);
         }
         if (openCards.length === 2) {
             setTimeout(function() {
