@@ -140,10 +140,11 @@ h1 {
 
 .score-panel {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     margin-bottom: 10px;
     max-width: 345px;
     text-align: left;
+    width: 100%;
 }
 
 .score-panel .stars {
@@ -159,7 +160,6 @@ h1 {
 }
 
 .score-panel .restart {
-    float: right;
     cursor: pointer;
 }
 
@@ -272,6 +272,63 @@ h1 {
         background-color: transparent
     }
 }
+
+
+/* modal */
+
+.blur {
+    filter: blur(15px) grayscale(0.5);
+}
+
+.backdrop,
+.modal {
+    left: 0;
+    position: absolute;
+    top: -999px;
+}
+
+.backdrop {
+    background: rgba(0, 0, 0, 0.6);
+    height: 100%;
+    width: 100%;
+    z-index: 100;
+}
+
+.backdrop.show {
+    top: 0;
+}
+
+.modal {
+    background: #fff;
+    border: 2px solid #000;
+    border-radius: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: top 0.5s linear;
+    width: 50%;
+    z-index: 101;
+}
+
+.modal.show {
+    top: 20%;
+    transition: top 0.5s linear;
+}
+
+.modal-content {
+    padding: 40px;
+    text-align: center;
+}
+
+.modal-restart {
+    background: rgb(0, 199, 66);
+    border: 0 none;
+    color: #fff;
+    font-size: 20px;
+    padding: 10px 20px;
+}
+
+
+/* responsive */
 
 @media screen and (min-width: 530px) {
     .deck {
