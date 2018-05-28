@@ -319,12 +319,20 @@ h1 {
     text-align: center;
 }
 
-.modal-restart {
-    background: rgb(0, 199, 66);
+.modal-restart,
+.modal-quit {
     border: 0 none;
     color: #fff;
     font-size: 20px;
     padding: 10px 20px;
+}
+
+.modal-restart {
+    background: rgb(0, 199, 66);
+}
+
+.modal-quit {
+    background: rgb(199, 0, 0);
 }
 
 

@@ -1,11 +1,12 @@
 (function() {
-    const cards = ["diamond", "paper-plane-o", "anchor", "bolt", "cube", "leaf", "bicycle", "bomb"];
+    const cardsList = document.querySelectorAll('.card > i');
     const container = document.querySelector('.container');
     const backdrop = document.querySelector('.backdrop');
     const modal = document.querySelector('.modal');
     const deck = document.querySelector('.deck');
     const refreshBtn = document.querySelector('.restart');
     const restartBtn = document.querySelector('.modal-restart');
+    const quitBtn = document.querySelector('.modal-quit');
     const spinner = document.querySelector('.spinner');
     const time = document.querySelector('.timer');
     const starList = document.querySelectorAll('.fa-star');
@@ -30,6 +31,19 @@
         clickCount = 0,
         seconds = 0,
         minutes = 0;
+
+    function convertNodeList(nodeList) {
+        let listArr = Array.from(nodeList);
+
+        return listArr.map(function(item) {
+            let list = item.classList;
+            return list.value
+        });
+    }
+
+    function removeDups(array) {
+        return [...new Set(array)];
+    }
 
     function startTimer() {
         seconds++;
@@ -72,10 +86,11 @@
 
     function mapItems(list) {
         return list.map(item => {
+            let classes = item.split(' ');
             let li = document.createElement('li');
             let icon = document.createElement('i');
             li.classList.add('card', 'hide');
-            icon.classList.add('fa', `fa-${item}`);
+            icon.classList.add(`${classes[0]}`, `${classes[1]}`);
 
             li.appendChild(icon);
             return li;
@@ -137,17 +152,18 @@
     }
 
     function dealCards(time) {
-        let newCards = buildList(cards);
+        let newCards = removeDups(convertNodeList(cardsList));
+        let newDeck = buildList(newCards);
 
         displayMessage(time);
 
         setTimeout(function() {
             hideSpinner();
             let i = 0,
-                l = newCards.length;
+                l = newDeck.length;
             (function deal() {
-                deck.appendChild(newCards[i]);
-                newCards[i].classList.remove('hide');
+                deck.appendChild(newDeck[i]);
+                newDeck[i].classList.remove('hide');
 
                 if (++i < l) {
                     setTimeout(deal, 200);
@@ -297,6 +313,9 @@
     });
     restartBtn.addEventListener('click', function(e) {
         rebuildDeck();
+    });
+    quitBtn.addEventListener('click', function(e) {
+        refreshUI();
     });
 
     deck.addEventListener('click', function(e) {
