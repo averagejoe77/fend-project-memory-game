@@ -64,9 +64,13 @@
         t = setTimeout(startTimer, 1000);
     }
 
-    function stopTimer() {
+    function stopTimer(reset) {
         clearTimeout(t);
-        time.textContent = "00:00";
+        if (reset) {
+            seconds = 0;
+            minutes = 0;
+            time.textContent = "00:00";
+        }
     }
 
     function buildList(array) {
@@ -119,15 +123,17 @@
     }
 
     function refreshUI() {
-        stopTimer();
+        stopTimer(true);
         modal.classList.remove('show');
         backdrop.classList.remove('show');
         container.classList.remove('blur');
         totalMatches = 0;
+        clickCount = 0;
         starList.forEach(function(item, idx, arr) {
             item.classList.remove('fa-star-o');
             item.classList.add('fa-star');
         });
+        addMove(0);
     }
 
     function displayMessage(time) {
@@ -175,7 +181,6 @@
     function rebuildDeck() {
         openCards = [];
         refreshUI();
-        addMove(0);
         showSpinner();
 
         let time = Math.floor(Math.random() * 10000);
@@ -289,6 +294,7 @@
     }
 
     function winGame() {
+        stopTimer(false);
         setTimeout(function() {
             container.classList.add('blur');
             backdrop.classList.add('show');
@@ -315,7 +321,10 @@
         rebuildDeck();
     });
     quitBtn.addEventListener('click', function(e) {
-        refreshUI();
+        stopTimer(false);
+        modal.classList.remove('show');
+        backdrop.classList.remove('show');
+        container.classList.remove('blur');
     });
 
     deck.addEventListener('click', function(e) {
